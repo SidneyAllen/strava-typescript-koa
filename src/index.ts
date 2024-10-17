@@ -3,6 +3,8 @@ import Router from 'koa-router';
 import { AuthorizationCode } from 'simple-oauth2';
 import 'dotenv/config';
 
+import { randomBytes } from 'crypto';
+
 var session = require('koa-generic-session');
 var redisStore = require('koa-redis');
 const bodyParser = require('koa-bodyparser');
@@ -51,11 +53,14 @@ router.get('/', async (ctx) => {
 
 // Authorization and Redirect route
 router.get('/auth', async (ctx) => {
+  const state = generateRandomState();
   const authorizationUri = oauthClient.authorizeURL({
     redirect_uri: process.env.REDIRECT_URI,
     scope: 'profile:read_all,read',
-    state: 'foobar',
+    state: state,
   });
+
+  session.state = state;
 
   ctx.redirect(authorizationUri);
 });
@@ -67,6 +72,11 @@ router.get('/callback', async (ctx) => {
 
   if (!code) {
     ctx.body = 'Authorization code is missing!';
+    return;
+  }
+
+  if (state != session.state) {
+    ctx.body = 'Authorization state invalid!';
     return;
   }
 
@@ -110,8 +120,13 @@ router.get('/get_athelete', async (ctx) => {
 
   // Now you can work with the parsed JSON data
   console.log(data); // Access properties from the data object
-  ctx.body = '<h1>Welcome to your Strava Profile</h1><a href="/">Start Over</a> ';
+  ctx.body = '<h1>Welcome to your Strava Profile</h1><img src="' + data.profile + '"><br><a href="/">Start Over</a> ';
 });
+
+function generateRandomState(): string {
+  const state = randomBytes(32).toString('hex');
+  return state;
+}
 
 app.use(router.routes());
 app.use(router.allowedMethods());

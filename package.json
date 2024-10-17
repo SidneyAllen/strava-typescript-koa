@@ -1,0 +1,36 @@
+{
+  "name": "koa-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "DEBUG=*simple-oauth2* ts-node-dev src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/koa": "^2.15.0",
+    "@types/koa-router": "^7.4.8",
+    "@types/simple-oauth2": "^5.0.7",
+    "client-oauth2": "^4.3.3",
+    "debug": "^4.3.7",
+    "dotenv": "^16.4.5",
+    "koa": "^2.15.3",
+    "koa-bodyparser": "^4.4.1",
+    "koa-generic-session": "^2.3.1",
+    "koa-redis": "^4.0.1",
+    "koa-router": "^13.0.1",
+    "koa-session": "^6.4.0",
+    "simple-oauth2": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsc-watch": "^6.2.0",
+    "typescript": "^5.6.3"
+  }
+}

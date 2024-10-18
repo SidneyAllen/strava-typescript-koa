@@ -57,7 +57,7 @@ app.use(async (ctx, next) => {
 
 // Home route
 router.get('/', async (ctx) => {
-  const body = await pug.render('index', "", true);
+  const body = await pug.render('index', '', true);
   ctx.body = body;
 });
 
@@ -100,7 +100,7 @@ router.get('/callback', async (ctx) => {
 
     // Save token in session
     session.token = data.token.access_token;
-    const body = await pug.render('callback', "", true);
+    const body = await pug.render('callback', '', true);
     ctx.body = body;
   } catch (error) {
     if (!error) {
@@ -128,8 +128,7 @@ router.get('/me', async (ctx) => {
 
   // Read the ReadableStream as JSON
   const activity_data = await activity_response.json();
-  console.log(activity_data);
-  
+
   // Get Athelete Information
   const me_response = await fetch('https://www.strava.com/api/v3/athlete', {
     headers: {
@@ -148,7 +147,6 @@ router.get('/me', async (ctx) => {
   // Now you can work with the parsed JSON data
   const body = await pug.render('me', me_data, true);
   ctx.body = body;
-
 });
 
 function generateRandomState(): string {

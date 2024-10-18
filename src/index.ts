@@ -8,8 +8,17 @@ import { randomBytes } from 'crypto';
 var session = require('koa-generic-session');
 var redisStore = require('koa-redis');
 const bodyParser = require('koa-bodyparser');
+const path = require('path');
+const Pug = require('koa-pug');
 
 const app = new Koa();
+const pug = new Pug({
+  viewPath: path.resolve(__dirname, './views'),
+  locals: {
+    /* variables and helpers */
+  },
+  app: app, // Binding `ctx.render()`
+});
 const router = new Router();
 
 const oauthClient = new AuthorizationCode({
@@ -91,7 +100,7 @@ router.get('/callback', async (ctx) => {
     // Save token in session
     session.token = data.token.access_token;
 
-    ctx.body = '<h1>Authorization successful!</h1> <a href="/get_athelete">Get Your Profile</a>';
+    ctx.body = '<h1>Authorization successful!</h1> <a href="/me">Get Your Profile</a>';
   } catch (error) {
     if (!error) {
       return;
@@ -101,7 +110,7 @@ router.get('/callback', async (ctx) => {
 });
 
 // Get Authenticated Athelete route
-router.get('/get_athelete', async (ctx) => {
+router.get('/me', async (ctx) => {
   const accessToken = session.token;
 
   const response = await fetch('https://www.strava.com/api/v3/athlete', {
@@ -119,8 +128,8 @@ router.get('/get_athelete', async (ctx) => {
   const data = await response.json();
 
   // Now you can work with the parsed JSON data
-  console.log(data); // Access properties from the data object
-  ctx.body = '<h1>Welcome to your Strava Profile</h1><img src="' + data.profile + '"><br><a href="/">Start Over</a> ';
+  const body = await pug.render('me', data, true);
+  ctx.body = body;
 });
 
 function generateRandomState(): string {

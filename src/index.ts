@@ -152,6 +152,7 @@ router.get('/me', async (ctx) => {
 function generateRandomState(): string {
   const state = randomBytes(32).toString('hex');
   return state;
+  
 }
 
 app.use(router.routes());

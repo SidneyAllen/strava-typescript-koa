@@ -57,7 +57,8 @@ app.use(async (ctx, next) => {
 
 // Home route
 router.get('/', async (ctx) => {
-  ctx.body = '<h1>Welcome</h1><a href="/auth">Connect to Strava</a>';
+  const body = await pug.render('index', "", true);
+  ctx.body = body;
 });
 
 // Authorization and Redirect route
@@ -65,7 +66,7 @@ router.get('/auth', async (ctx) => {
   const state = generateRandomState();
   const authorizationUri = oauthClient.authorizeURL({
     redirect_uri: process.env.REDIRECT_URI,
-    scope: 'profile:read_all,read',
+    scope: 'profile:read_all,read,activity:read',
     state: state,
   });
 
@@ -99,8 +100,8 @@ router.get('/callback', async (ctx) => {
 
     // Save token in session
     session.token = data.token.access_token;
-
-    ctx.body = '<h1>Authorization successful!</h1> <a href="/me">Get Your Profile</a>';
+    const body = await pug.render('callback', "", true);
+    ctx.body = body;
   } catch (error) {
     if (!error) {
       return;
@@ -113,23 +114,41 @@ router.get('/callback', async (ctx) => {
 router.get('/me', async (ctx) => {
   const accessToken = session.token;
 
-  const response = await fetch('https://www.strava.com/api/v3/athlete', {
+  // Get Activity Information
+  const activity_response = await fetch('https://www.strava.com/api/v3/athlete/activities', {
     headers: {
       Authorization: 'Bearer ' + accessToken,
     },
   });
 
   // Check if the response is OK (status code is 200-299)
-  if (!response.ok) {
+  if (!activity_response.ok) {
     throw new Error('Network response was not ok');
   }
 
   // Read the ReadableStream as JSON
-  const data = await response.json();
+  const activity_data = await activity_response.json();
+  console.log(activity_data);
+  
+  // Get Athelete Information
+  const me_response = await fetch('https://www.strava.com/api/v3/athlete', {
+    headers: {
+      Authorization: 'Bearer ' + accessToken,
+    },
+  });
+
+  // Check if the response is OK (status code is 200-299)
+  if (!me_response.ok) {
+    throw new Error('Network response was not ok');
+  }
+
+  // Read the ReadableStream as JSON
+  const me_data = await me_response.json();
 
   // Now you can work with the parsed JSON data
-  const body = await pug.render('me', data, true);
+  const body = await pug.render('me', me_data, true);
   ctx.body = body;
+
 });
 
 function generateRandomState(): string {

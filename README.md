@@ -8,6 +8,12 @@ Project built with:
 * Koa
 * Simple OAuth2
 
+## Live Demo
+
+This project has been deployed on Render.
+
+[See Live Demo](https://strava-typescript-koa.onrender.com/)
+
 ## Getting Started
 
 Fork or Clone this repository to your local development environement

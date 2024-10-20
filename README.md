@@ -1,4 +1,4 @@
-# strava-typescript-koa
+# Strava Typescript Koa
 
 This example app demonstrates Strava's 3-legged OAuth2 flow and displays basic profile information.
 
